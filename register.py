@@ -92,6 +92,25 @@ class Register:
 
 
         #button
+        regisbutton = Image.open(r"C:\Users\ishut\Downloads\FaceLog\Images\registerbutton.jpg")
+        regisbutton = regisbutton.resize((200, 55), Image.LANCZOS)
+        
+        self.photoimage = ImageTk.PhotoImage(regisbutton)
+
+        # Create button
+        b1 = Button(frame, image=self.photoimage, borderwidth=0, cursor="hand2")
+        b1.place(x=50, y=420, width=200)
+
+
+        loginbutton = Image.open(r"C:\Users\ishut\Downloads\FaceLog\Images\loginbutton.jpg")
+        loginbutton = loginbutton.resize((200, 55), Image.LANCZOS)
+        
+        self.photoimagelogin = ImageTk.PhotoImage(loginbutton)
+
+        # Create button
+        b2 = Button(frame, image=self.photoimagelogin, borderwidth=0, cursor="hand2")
+        b2.place(x=380, y=420, width=200)
+        
 
 
 if __name__ == "__main__":
