@@ -1,7 +1,9 @@
 from tkinter import *
 from tkinter import ttk
 from PIL import Image, ImageTk    
-from tkinter import messagebox  
+from tkinter import messagebox
+import pymongo
+import subprocess
 
 class Login_Window:
     def __init__(self, root):  
@@ -9,12 +11,20 @@ class Login_Window:
         self.root.title("Login")
         self.root.geometry("1550x800+0+0")
 
-        # Load and resize the background image
+        # MongoDB Connection
+        try:
+            self.client = pymongo.MongoClient("mongodb://127.0.0.1:27017/")
+            self.db = self.client["FaceLogDB"]
+            self.collection = self.db["users"]
+            print("Connected to MongoDB successfully!")
+        except Exception as e:
+            messagebox.showerror("Database Error", f"Failed to connect to MongoDB: {str(e)}")
+
+        # Load and resize background image
         image_path = r"C:\Users\ishut\Downloads\FaceLog\Images\Login Background.jpg"
         bg_image = Image.open(image_path).resize((1550, 800))
         self.bg = ImageTk.PhotoImage(bg_image)
 
-        # Set background image
         lbl_bg = Label(self.root, image=self.bg)
         lbl_bg.place(x=0, y=0, relwidth=1, relheight=1)
 
@@ -31,50 +41,93 @@ class Login_Window:
         get_str = Label(frame, text="Get Started", font=("times new roman", 20, "bold"), fg="white", bg="black")
         get_str.place(x=95, y=100)
 
-        # Username Icon
-        img2 = Image.open(r"C:\Users\ishut\Downloads\FaceLog\Images\loginicon.webp").resize((25, 25), Image.LANCZOS)
-        self.photoimage2 = ImageTk.PhotoImage(img2)
-        lblimg2 = Label(frame, image=self.photoimage2, bg="black", borderwidth=0)
-        lblimg2.place(x=10, y=155, width=25, height=25)  # Align with "Username" label
-
         # Username Label & Input Field
-        username = Label(frame, text="Username", font=("times new roman", 15, "bold"), fg="white", bg="black")
-        username.place(x=40, y=155)  # Moved right to align with icon
+        username = Label(frame, text="Email", font=("times new roman", 15, "bold"), fg="white", bg="black")
+        username.place(x=40, y=155)
 
         self.txtuser = ttk.Entry(frame, font=("times new roman", 15, "bold"))
         self.txtuser.place(x=40, y=180, width=270)
 
-        # Password Icon
-        img3 = Image.open(r"C:\Users\ishut\Downloads\FaceLog\Images\passwordicon.webp").resize((25, 25), Image.LANCZOS)
-        self.photoimage3 = ImageTk.PhotoImage(img3)
-        lblimg3 = Label(frame, image=self.photoimage3, bg="black", borderwidth=0)
-        lblimg3.place(x=10, y=225, width=25, height=25)  # Align with "Password" label
-
         # Password Label & Input Field
         password = Label(frame, text="Password", font=("times new roman", 15, "bold"), fg="white", bg="black")
-        password.place(x=40, y=225)  # Moved right to align with icon
+        password.place(x=40, y=225)
 
-        self.txtpass = ttk.Entry(frame, font=("times new roman", 15, "bold"), show="*")  # Hide password
+        self.txtpass = ttk.Entry(frame, font=("times new roman", 15, "bold"), show="*")
         self.txtpass.place(x=40, y=250, width=270)
 
         # Login Button
         loginbtn = Button(frame, command=self.login, text="Login", font=("times new roman", 15, "bold"), bd=3, relief=RIDGE, fg="white", bg="red", activeforeground="white", activebackground="red")
         loginbtn.place(x=110, y=300, width=120, height=35)
 
-        # Register & Forgot Password Buttons
-        registerbtn = Button(frame, text="New User Register", font=("times new roman", 10, "bold"), borderwidth=0, fg="white", bg="black", activeforeground="white", activebackground="black")
+        # Register Button
+        registerbtn = Button(frame, text="New User Register", command=self.open_register, font=("times new roman", 10, "bold"), borderwidth=0, fg="white", bg="black", activeforeground="white", activebackground="black")
         registerbtn.place(x=15, y=350, width=160)
 
-        forgetpassbtn = Button(frame, text="Forgot Password?", font=("times new roman", 10, "bold"), borderwidth=0, fg="white", bg="black", activeforeground="white", activebackground="black")
+        # Forgot Password Button
+        forgetpassbtn = Button(frame, text="Forgot Password?", command=self.forgot_password, font=("times new roman", 10, "bold"), borderwidth=0, fg="white", bg="black", activeforeground="white", activebackground="black")
         forgetpassbtn.place(x=20, y=380, width=160)
 
     def login(self):
-        if self.txtuser.get() == "" or self.txtpass.get() == "":
+        email = self.txtuser.get()
+        password = self.txtpass.get()
+
+        if email == "" or password == "":
             messagebox.showerror("Error", "All fields are required")
-        elif self.txtuser.get() == "ishi" and self.txtpass.get() == "1234":
-            messagebox.showinfo("Success", "Welcome to FaceLog")
+            return
+
+        user = self.collection.find_one({"Email": email, "Password": password})
+
+        if user:
+            messagebox.showinfo("Success", "Login Successful")
+            self.root.destroy()
+            subprocess.run(["python", "main.py"])
         else:
-            messagebox.showerror("Error", "Invalid username or password")
+            messagebox.showerror("Error", "Invalid email or password")
+
+    def open_register(self):
+        self.root.destroy()
+        subprocess.run(["python", "register.py"])
+
+    def forgot_password(self):
+        email = self.txtuser.get()
+        if email == "":
+            messagebox.showerror("Error", "Enter your registered email to reset password")
+            return
+
+        user = self.collection.find_one({"Email": email})
+        if not user:
+            messagebox.showerror("Error", "Email not found")
+            return
+
+        # Forgot Password Window
+        self.forgot_pass_win = Toplevel(self.root)
+        self.forgot_pass_win.title("Reset Password")
+        self.forgot_pass_win.geometry("400x300+600+300")
+
+        Label(self.forgot_pass_win, text="Reset Password", font=("times new roman", 20, "bold")).pack(pady=10)
+
+        Label(self.forgot_pass_win, text="New Password", font=("times new roman", 15)).pack(pady=5)
+        self.new_password = ttk.Entry(self.forgot_pass_win, font=("times new roman", 15), show="*")
+        self.new_password.pack(pady=5)
+
+        Label(self.forgot_pass_win, text="Confirm Password", font=("times new roman", 15)).pack(pady=5)
+        self.confirm_password = ttk.Entry(self.forgot_pass_win, font=("times new roman", 15), show="*")
+        self.confirm_password.pack(pady=5)
+
+        Button(self.forgot_pass_win, text="Reset", command=lambda: self.reset_password(email), font=("times new roman", 15, "bold"), bg="green", fg="white").pack(pady=20)
+
+    def reset_password(self, email):
+        new_pass = self.new_password.get()
+        confirm_pass = self.confirm_password.get()
+
+        if new_pass == "" or confirm_pass == "":
+            messagebox.showerror("Error", "All fields are required", parent=self.forgot_pass_win)
+        elif new_pass != confirm_pass:
+            messagebox.showerror("Error", "Passwords do not match", parent=self.forgot_pass_win)
+        else:
+            self.collection.update_one({"Email": email}, {"$set": {"Password": new_pass}})
+            messagebox.showinfo("Success", "Password reset successfully", parent=self.forgot_pass_win)
+            self.forgot_pass_win.destroy()
 
 if __name__ == "__main__":  
     root = Tk()
