@@ -11,7 +11,7 @@ class TeacherDashboard:
         self.root.resizable(False, False)
 
         # Load and blur background image
-        bg_image = Image.open(r"C:\Users\ishut\Downloads\FaceLog\Images\attendancematters.jpg").resize((1550, 800))
+        bg_image = Image.open(r"C:\Users\ishut\Downloads\FaceLog\Images\teacherdashboardbackground.jpg").resize((1550, 800))
         blurred_bg = bg_image.filter(ImageFilter.GaussianBlur(radius=3))
         self.bg = ImageTk.PhotoImage(blurred_bg)
 
