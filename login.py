@@ -30,9 +30,9 @@ class Login_Window:
 
         # Login Frame
         frame = Frame(self.root, bg="black")
-        frame.place(x=610, y=170, width=340, height=450)
+        frame.place(x=610, y=170, width=340, height=500)
 
-        # Login App Icon (Top)
+        # App Icon
         img1 = Image.open(r"C:\Users\ishut\Downloads\FaceLog\Images\LoginAppIcon-removebg-preview.png").resize((100, 100), Image.LANCZOS)
         self.photoimage1 = ImageTk.PhotoImage(img1)
         lblimg1 = Label(frame, image=self.photoimage1, bg="black", borderwidth=0)
@@ -41,48 +41,57 @@ class Login_Window:
         get_str = Label(frame, text="Get Started", font=("times new roman", 20, "bold"), fg="white", bg="black")
         get_str.place(x=95, y=100)
 
-        # Username Label & Input Field
+        # Email
         username = Label(frame, text="Email", font=("times new roman", 15, "bold"), fg="white", bg="black")
-        username.place(x=40, y=155)
-
+        username.place(x=40, y=140)
         self.txtuser = ttk.Entry(frame, font=("times new roman", 15, "bold"))
-        self.txtuser.place(x=40, y=180, width=270)
+        self.txtuser.place(x=40, y=165, width=270)
 
-        # Password Label & Input Field
+        # Password
         password = Label(frame, text="Password", font=("times new roman", 15, "bold"), fg="white", bg="black")
-        password.place(x=40, y=225)
-
+        password.place(x=40, y=200)
         self.txtpass = ttk.Entry(frame, font=("times new roman", 15, "bold"), show="*")
-        self.txtpass.place(x=40, y=250, width=270)
+        self.txtpass.place(x=40, y=225, width=270)
+
+        # Role Dropdown
+        role_lbl = Label(frame, text="Select Role", font=("times new roman", 15, "bold"), fg="white", bg="black")
+        role_lbl.place(x=40, y=260)
+        self.var_role = StringVar()
+        self.combo_role = ttk.Combobox(frame, textvariable=self.var_role, font=("times new roman", 15), state="readonly")
+        self.combo_role["values"] = ("Select", "Student", "Teacher")
+        self.combo_role.place(x=40, y=285, width=270)
+        self.combo_role.current(0)
 
         # Login Button
         loginbtn = Button(frame, command=self.login, text="Login", font=("times new roman", 15, "bold"), bd=3, relief=RIDGE, fg="white", bg="red", activeforeground="white", activebackground="red")
-        loginbtn.place(x=110, y=300, width=120, height=35)
+        loginbtn.place(x=110, y=330, width=120, height=35)
 
-        # Register Button
+        # Register and Forgot Password
         registerbtn = Button(frame, text="New User Register", command=self.open_register, font=("times new roman", 10, "bold"), borderwidth=0, fg="white", bg="black", activeforeground="white", activebackground="black")
-        registerbtn.place(x=15, y=350, width=160)
+        registerbtn.place(x=15, y=380, width=160)
 
-        # Forgot Password Button
         forgetpassbtn = Button(frame, text="Forgot Password?", command=self.forgot_password, font=("times new roman", 10, "bold"), borderwidth=0, fg="white", bg="black", activeforeground="white", activebackground="black")
-        forgetpassbtn.place(x=20, y=380, width=160)
+        forgetpassbtn.place(x=20, y=410, width=160)
 
     def login(self):
         email = self.txtuser.get()
         password = self.txtpass.get()
+        role = self.var_role.get()
 
-        if email == "" or password == "":
+        if email == "" or password == "" or role == "Select":
             messagebox.showerror("Error", "All fields are required")
             return
 
-        user = self.collection.find_one({"Email": email, "Password": password})
-
+        user = self.collection.find_one({"Email": email, "Password": password, "Role": role})
         if user:
             messagebox.showinfo("Success", "Login Successful")
             self.root.destroy()
-            subprocess.run(["python", "main.py"])
+            if role == "Student":
+                subprocess.run(["python", "studentdashboard.py"])
+            elif role == "Teacher":
+                subprocess.run(["python", "teacherdashboard.py"])
         else:
-            messagebox.showerror("Error", "Invalid email or password")
+            messagebox.showerror("Error", "Invalid credentials or role")
 
     def open_register(self):
         self.root.destroy()
@@ -99,12 +108,15 @@ class Login_Window:
             messagebox.showerror("Error", "Email not found")
             return
 
-        # Forgot Password Window
         self.forgot_pass_win = Toplevel(self.root)
         self.forgot_pass_win.title("Reset Password")
-        self.forgot_pass_win.geometry("400x300+600+300")
+        self.forgot_pass_win.geometry("400x350+600+300")
 
         Label(self.forgot_pass_win, text="Reset Password", font=("times new roman", 20, "bold")).pack(pady=10)
+
+        Label(self.forgot_pass_win, text=f"{user['Security Question']}", font=("times new roman", 15)).pack(pady=5)
+        self.answer_entry = ttk.Entry(self.forgot_pass_win, font=("times new roman", 15))
+        self.answer_entry.pack(pady=5)
 
         Label(self.forgot_pass_win, text="New Password", font=("times new roman", 15)).pack(pady=5)
         self.new_password = ttk.Entry(self.forgot_pass_win, font=("times new roman", 15), show="*")
@@ -114,14 +126,17 @@ class Login_Window:
         self.confirm_password = ttk.Entry(self.forgot_pass_win, font=("times new roman", 15), show="*")
         self.confirm_password.pack(pady=5)
 
-        Button(self.forgot_pass_win, text="Reset", command=lambda: self.reset_password(email), font=("times new roman", 15, "bold"), bg="green", fg="white").pack(pady=20)
+        Button(self.forgot_pass_win, text="Reset", command=lambda: self.reset_password(email, user), font=("times new roman", 15, "bold"), bg="green", fg="white").pack(pady=20)
 
-    def reset_password(self, email):
+    def reset_password(self, email, user):
+        answer = self.answer_entry.get()
         new_pass = self.new_password.get()
         confirm_pass = self.confirm_password.get()
 
-        if new_pass == "" or confirm_pass == "":
+        if answer == "" or new_pass == "" or confirm_pass == "":
             messagebox.showerror("Error", "All fields are required", parent=self.forgot_pass_win)
+        elif answer.lower() != user["Security Answer"].lower():
+            messagebox.showerror("Error", "Incorrect security answer", parent=self.forgot_pass_win)
         elif new_pass != confirm_pass:
             messagebox.showerror("Error", "Passwords do not match", parent=self.forgot_pass_win)
         else:
@@ -133,5 +148,3 @@ if __name__ == "__main__":
     root = Tk()
     app = Login_Window(root)
     root.mainloop()
-
-
