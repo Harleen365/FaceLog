@@ -9,7 +9,7 @@ class Face_Recognition_System:
         self.root.title("Face Recognition System")
 
         # First image
-        img = Image.open(r"C:\Users\kharl\OneDrive\Desktop\FaceLog\Images\Chitkara_img.jpg")  # Replace with your image path
+        img = Image.open(r"C:\Users\ishut\Downloads\FaceLog\Images\Chitkara_img.jpg")  # Replace with your image path
         img = img.resize((500, 130), Image.LANCZOS)  # Updated: Use Image.LANCZOS instead of Image.ANTIALIAS
         self.photoimg1 = ImageTk.PhotoImage(img)  # Store separately to prevent garbage collection
 
@@ -17,7 +17,7 @@ class Face_Recognition_System:
         f_lbl1.place(x=0, y=0, width=500, height=130)
 
         # Second image
-        img1 = Image.open(r"C:\Users\kharl\OneDrive\Desktop\FaceLog\Images\Chitkara_img.jpg")  # Replace with your image path
+        img1 = Image.open(r"C:\Users\ishut\Downloads\FaceLog\Images\Chitkara_img.jpg")  # Replace with your image path
         img1 = img1.resize((500, 130), Image.LANCZOS)
         self.photoimg2 = ImageTk.PhotoImage(img1)
 
@@ -25,7 +25,7 @@ class Face_Recognition_System:
         f_lbl2.place(x=500, y=0, width=500, height=130)
 
         # Third image
-        img2 = Image.open(r"C:\Users\kharl\OneDrive\Desktop\FaceLog\Images\Chitkara_img.jpg")  # Replace with your image path
+        img2 = Image.open(r"C:\Users\ishut\Downloads\FaceLog\Images\Chitkara_img.jpg")  # Replace with your image path
         img2 = img2.resize((500, 130), Image.LANCZOS)
         self.photoimg3 = ImageTk.PhotoImage(img2)
 
@@ -34,7 +34,7 @@ class Face_Recognition_System:
 
        
         #bgimg
-        img3 = Image.open(r"C:\Users\kharl\OneDrive\Desktop\FaceLog\Images\back_pic.jpg")  # Replace with your image path
+        img3 = Image.open(r"C:\Users\ishut\Downloads\FaceLog\Images\back_pic.jpg")  # Replace with your image path
         img3 = img3.resize((1530, 710), Image.LANCZOS)
         self.photoimg3 = ImageTk.PhotoImage(img3)
 
@@ -47,7 +47,7 @@ class Face_Recognition_System:
 
 
         #student button
-        img4 = Image.open(r"C:\Users\kharl\OneDrive\Desktop\FaceLog\Images\Chitkara_img.jpg")  # Replace with your image path
+        img4 = Image.open(r"C:\Users\ishut\Downloads\FaceLog\Images\Chitkara_img.jpg")  # Replace with your image path
         img4 = img4.resize((220, 220), Image.LANCZOS)
         self.photoimg4 = ImageTk.PhotoImage(img4)
 
@@ -57,7 +57,7 @@ class Face_Recognition_System:
         b1_1.place(x = 200,y = 300, width=220,height=40)
 
         #detect face button
-        img5 = Image.open(r"C:\Users\kharl\OneDrive\Desktop\FaceLog\Images\Chitkara_img.jpg")  # Replace with your image path
+        img5 = Image.open(r"C:\Users\ishut\Downloads\FaceLog\Images\Chitkara_img.jpg")  # Replace with your image path
         img5 = img5.resize((220, 220), Image.LANCZOS)
         self.photoimg5 = ImageTk.PhotoImage(img5)
 
