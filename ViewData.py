@@ -64,8 +64,8 @@ class ViewData:
             header_frame = Frame(self.scrollable_frame, bg="#e0e0e0")
             header_frame.pack(fill=X, padx=30)
 
-            headers = ["Photo", "Name", "Accommodation", "Course", "Branch", "Group", "Mentor"]
-            widths = [60, 130, 130, 130, 130, 100, 130]
+            headers = ["Photo", "Name", "Email", "Accommodation", "Course", "Branch", "Group", "Mentor"]
+            widths = [60, 130, 180, 130, 130, 130, 100, 130]
             for text, w in zip(headers, widths):
                 Label(header_frame, text=text, font=("Arial", 10, "bold"), bg="#e0e0e0", width=w//10, anchor="center").pack(side=LEFT, padx=2)
 
@@ -81,6 +81,7 @@ class ViewData:
                 Label(entry_frame, image=img, bg="white").pack(side=LEFT, padx=5, pady=5)
 
                 Label(entry_frame, text=student.get("Name", ""), width=13, anchor="center", bg="white").pack(side=LEFT, padx=5)
+                Label(entry_frame, text=student.get("Email", ""), width=18, anchor="center", bg="white").pack(side=LEFT, padx=5)
                 Label(entry_frame, text=student.get("Accommodation", ""), width=13, anchor="center", bg="white").pack(side=LEFT, padx=5)
                 Label(entry_frame, text=student.get("Course", ""), width=13, anchor="center", bg="white").pack(side=LEFT, padx=5)
                 Label(entry_frame, text=student.get("Branch", ""), width=13, anchor="center", bg="white").pack(side=LEFT, padx=5)
@@ -102,3 +103,4 @@ if __name__ == "__main__":
     root = Tk()
     app = ViewData(root)
     root.mainloop()
+

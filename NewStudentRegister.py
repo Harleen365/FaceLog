@@ -61,13 +61,17 @@ class NewStudentRegister:
         self.mentor_entry = Entry(form_frame, font=("Arial", 14), width=30)
         self.mentor_entry.grid(row=5, column=1, padx=10)
 
-        Label(form_frame, text="Photograph", font=("Arial", 14), bg="white").grid(row=6, column=0, padx=10, pady=10, sticky=E)
-        Button(form_frame, text="Upload Photo", font=("Arial", 12), command=self.upload_photo).grid(row=6, column=1, padx=10, sticky=W)
+        Label(form_frame, text="Email", font=("Arial", 14), bg="white").grid(row=6, column=0, padx=10, pady=10, sticky=E)
+        self.email_entry = Entry(form_frame, font=("Arial", 14), width=30)
+        self.email_entry.grid(row=6, column=1, padx=10)
+
+        Label(form_frame, text="Photograph", font=("Arial", 14), bg="white").grid(row=7, column=0, padx=10, pady=10, sticky=E)
+        Button(form_frame, text="Upload Photo", font=("Arial", 12), command=self.upload_photo).grid(row=7, column=1, padx=10, sticky=W)
 
         self.photo_label = Label(form_frame, text="", font=("Arial", 10), bg="white", fg="gray")
-        self.photo_label.grid(row=7, column=1, sticky=W, padx=10)
+        self.photo_label.grid(row=8, column=1, sticky=W, padx=10)
 
-        Button(form_frame, text="Submit", font=("Arial", 14, "bold"), bg="green", fg="white", command=self.submit_form).grid(row=8, column=0, columnspan=2, pady=20)
+        Button(form_frame, text="Submit", font=("Arial", 14, "bold"), bg="green", fg="white", command=self.submit_form).grid(row=9, column=0, columnspan=2, pady=20)
 
         # Footer
         footer = Label(self.root, text="© 2025 FaceLog System", font=("Arial", 10), bg="darkblue", fg="white")
@@ -88,6 +92,7 @@ class NewStudentRegister:
             "Group": self.group_entry.get(),
             "Accommodation": self.accommodation_var.get(),
             "Mentor": self.mentor_entry.get(),
+            "Email": self.email_entry.get(),
             "Photograph": self.photo_path
         }
 
@@ -105,6 +110,7 @@ class NewStudentRegister:
         self.group_entry.delete(0, END)
         self.accommodation_var.set("")
         self.mentor_entry.delete(0, END)
+        self.email_entry.delete(0, END)
         self.photo_label.config(text="")
         self.photo_path = ""
 
