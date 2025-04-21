@@ -109,40 +109,59 @@ class Login_Window:
             return
 
         self.forgot_pass_win = Toplevel(self.root)
-        self.forgot_pass_win.title("Reset Password")
-        self.forgot_pass_win.geometry("400x350+600+300")
+        self.forgot_pass_win.title("Verify Security")
+        self.forgot_pass_win.geometry("400x250+600+300")
 
-        Label(self.forgot_pass_win, text="Reset Password", font=("times new roman", 20, "bold")).pack(pady=10)
+        Label(self.forgot_pass_win, text="Security Verification", font=("times new roman", 20, "bold")).pack(pady=10)
 
-        Label(self.forgot_pass_win, text=f"{user['Security Question']}", font=("times new roman", 15)).pack(pady=5)
+        Label(self.forgot_pass_win, text=user["Security Question"], font=("times new roman", 15)).pack(pady=5)
         self.answer_entry = ttk.Entry(self.forgot_pass_win, font=("times new roman", 15))
         self.answer_entry.pack(pady=5)
 
-        Label(self.forgot_pass_win, text="New Password", font=("times new roman", 15)).pack(pady=5)
-        self.new_password = ttk.Entry(self.forgot_pass_win, font=("times new roman", 15), show="*")
+        Button(self.forgot_pass_win, text="Verify", command=lambda: self.verify_security_answer(email, user), font=("times new roman", 15, "bold"), bg="blue", fg="white").pack(pady=15)
+
+    def verify_security_answer(self, email, user):
+        answer = self.answer_entry.get()
+
+        if answer == "":
+            messagebox.showerror("Error", "Answer is required", parent=self.forgot_pass_win)
+            return
+        elif answer.lower() != user["Security Answer"].lower():
+            messagebox.showerror("Error", "Incorrect security answer", parent=self.forgot_pass_win)
+            return
+
+        self.forgot_pass_win.destroy()
+        self.open_reset_password_window(email)
+
+    def open_reset_password_window(self, email):
+        self.reset_win = Toplevel(self.root)
+        self.reset_win.title("Reset Password")
+        self.reset_win.geometry("400x300+600+300")
+
+        Label(self.reset_win, text="Reset Password", font=("times new roman", 20, "bold")).pack(pady=10)
+
+        Label(self.reset_win, text="New Password", font=("times new roman", 15)).pack(pady=5)
+        self.new_password = ttk.Entry(self.reset_win, font=("times new roman", 15), show="*")
         self.new_password.pack(pady=5)
 
-        Label(self.forgot_pass_win, text="Confirm Password", font=("times new roman", 15)).pack(pady=5)
-        self.confirm_password = ttk.Entry(self.forgot_pass_win, font=("times new roman", 15), show="*")
+        Label(self.reset_win, text="Confirm Password", font=("times new roman", 15)).pack(pady=5)
+        self.confirm_password = ttk.Entry(self.reset_win, font=("times new roman", 15), show="*")
         self.confirm_password.pack(pady=5)
 
-        Button(self.forgot_pass_win, text="Reset", command=lambda: self.reset_password(email, user), font=("times new roman", 15, "bold"), bg="green", fg="white").pack(pady=20)
+        Button(self.reset_win, text="Reset", command=lambda: self.reset_password(email), font=("times new roman", 15, "bold"), bg="green", fg="white").pack(pady=15)
 
-    def reset_password(self, email, user):
-        answer = self.answer_entry.get()
+    def reset_password(self, email):
         new_pass = self.new_password.get()
         confirm_pass = self.confirm_password.get()
 
-        if answer == "" or new_pass == "" or confirm_pass == "":
-            messagebox.showerror("Error", "All fields are required", parent=self.forgot_pass_win)
-        elif answer.lower() != user["Security Answer"].lower():
-            messagebox.showerror("Error", "Incorrect security answer", parent=self.forgot_pass_win)
+        if new_pass == "" or confirm_pass == "":
+            messagebox.showerror("Error", "All fields are required", parent=self.reset_win)
         elif new_pass != confirm_pass:
-            messagebox.showerror("Error", "Passwords do not match", parent=self.forgot_pass_win)
+            messagebox.showerror("Error", "Passwords do not match", parent=self.reset_win)
         else:
             self.collection.update_one({"Email": email}, {"$set": {"Password": new_pass}})
-            messagebox.showinfo("Success", "Password reset successfully", parent=self.forgot_pass_win)
-            self.forgot_pass_win.destroy()
+            messagebox.showinfo("Success", "Password reset successfully", parent=self.reset_win)
+            self.reset_win.destroy()
 
 if __name__ == "__main__":  
     root = Tk()
