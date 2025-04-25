@@ -9,11 +9,10 @@ from PIL import Image, ImageTk
 from deepface import DeepFace
 
 class TakeAttendance:
-    def __init__(self, root, logged_in_email):
+    def __init__(self, root):
         self.root = root
         self.root.title("Take Attendance")
         self.root.geometry("1000x700+100+50")
-        self.logged_in_email = logged_in_email
 
         # MongoDB Setup
         self.client = pymongo.MongoClient("mongodb://127.0.0.1:27017/")
@@ -100,7 +99,7 @@ class TakeAttendance:
                 db_path=self.temp_db_dir,
                 enforce_detection=False,
                 model_name='VGG-Face',
-                detector_backend='opencv'  # You can try 'retinaface' or 'mtcnn' if needed
+                detector_backend='opencv'
             )
 
             if len(results) > 0 and not results[0].empty:
@@ -109,13 +108,10 @@ class TakeAttendance:
                 matched = self.student_map.get(file_name)
 
                 if matched:
-                    if matched["email"] == self.logged_in_email:
-                        self.recognized_email = matched["email"]
-                        self.student_name = matched["name"]
-                        messagebox.showinfo("Recognized", f"Welcome, {self.student_name}!")
-                        self.submit_button.config(state=NORMAL)
-                    else:
-                        messagebox.showerror("Error", f"Face detected as {matched['email']}, but you are logged in as {self.logged_in_email}")
+                    self.recognized_email = matched["email"]
+                    self.student_name = matched["name"]
+                    messagebox.showinfo("Recognized", f"Welcome, {self.student_name}!")
+                    self.submit_button.config(state=NORMAL)
                 else:
                     messagebox.showerror("Error", "Face not recognized.")
             else:
@@ -149,7 +145,7 @@ class TakeAttendance:
             shutil.rmtree(self.temp_db_dir)
 
 if __name__ == "__main__":
-    logged_in_email = "student1@example.com"  # Replace with actual logged-in email
     root = Tk()
-    app = TakeAttendance(root, logged_in_email)
+    app = TakeAttendance(root)
     root.mainloop()
+
