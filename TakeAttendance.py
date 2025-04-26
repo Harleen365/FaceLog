@@ -148,4 +148,3 @@ if __name__ == "__main__":
     root = Tk()
     app = TakeAttendance(root)
     root.mainloop()
-
