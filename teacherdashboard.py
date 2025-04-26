@@ -1,5 +1,4 @@
 from tkinter import *
-from tkinter import messagebox
 from PIL import Image, ImageTk, ImageFilter
 import subprocess
 
@@ -18,6 +17,13 @@ class TeacherDashboard:
         bg_label = Label(self.root, image=self.bg)
         bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
+        # Load current user email
+        try:
+            with open("current_user.txt", "r") as f:
+                self.logged_in_email = f.read().strip()
+        except FileNotFoundError:
+            self.logged_in_email = "Unknown User"
+
         # Navbar
         navbar = Frame(self.root, bg="navy", height=60)
         navbar.pack(side=TOP, fill=X)
@@ -25,7 +31,9 @@ class TeacherDashboard:
         title = Label(navbar, text="Teacher Dashboard", font=("Helvetica", 20, "bold"), fg="white", bg="navy")
         title.pack(side=LEFT, padx=20)
 
-        # Navbar Buttons
+        # Display user email on the right side
+        Label(navbar, text=f"Logged in as: {self.logged_in_email}", font=("Arial", 12, "bold"), fg="white", bg="navy").pack(side=RIGHT, padx=20)
+
         Button(navbar, text="Store Data", font=("Arial", 12, "bold"), bg="#28a745", fg="white",
                command=self.open_data).pack(side=LEFT, padx=10, pady=10)
         Button(navbar, text="View Attendance", font=("Arial", 12, "bold"), bg="#007bff", fg="white",

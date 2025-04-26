@@ -84,14 +84,18 @@ class Login_Window:
 
         user = self.collection.find_one({"Email": email, "Password": password, "Role": role})
         if user:
-            messagebox.showinfo("Success", "Login Successful")
-            self.root.destroy()
-            if role == "Student":
-                subprocess.run(["python", "studentdashboard.py"])
-            elif role == "Teacher":
-                subprocess.run(["python", "teacherdashboard.py"])
-        else:
-            messagebox.showerror("Error", "Invalid credentials or role")
+           messagebox.showinfo("Success", "Login Successful")
+    
+    # Save the logged-in user's email to a file
+        with open("current_user.txt", "w") as f:
+            f.write(email)
+        
+        self.root.destroy()
+        if role == "Student":
+            subprocess.run(["python", "studentdashboard.py"])
+        elif role == "Teacher":
+            subprocess.run(["python", "teacherdashboard.py"])
+
 
     def open_register(self):
         self.root.destroy()
