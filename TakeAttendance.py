@@ -94,6 +94,14 @@ class TakeAttendance:
 
     def perform_face_recognition(self):
         try:
+            # Load logged-in user's email
+            try:
+                with open("current_user.txt", "r") as f:
+                    current_logged_in_email = f.read().strip()
+            except FileNotFoundError:
+                messagebox.showerror("Error", "No logged-in user found.")
+                return
+
             results = DeepFace.find(
                 img_path=self.captured_image_path,
                 db_path=self.temp_db_dir,
@@ -108,16 +116,27 @@ class TakeAttendance:
                 matched = self.student_map.get(file_name)
 
                 if matched:
-                    self.recognized_email = matched["email"]
-                    self.student_name = matched["name"]
-                    messagebox.showinfo("Recognized", f"Welcome, {self.student_name}!")
-                    self.submit_button.config(state=NORMAL)
+                    recognized_email = matched["email"]
+                    recognized_name = matched["name"]
+
+                    if recognized_email == current_logged_in_email:
+                        self.recognized_email = recognized_email
+                        self.student_name = recognized_name
+                        messagebox.showinfo("Recognized", f"Welcome, {self.student_name}!")
+                        self.submit_button.config(state=NORMAL)
+                    else:
+                        self.recognized_email = None
+                        self.student_name = None
+                        messagebox.showerror("Error", "You are not the student who logged in.\nAttendance not allowed.")
+                        self.submit_button.config(state=DISABLED)
                 else:
                     messagebox.showerror("Error", "Face not recognized.")
             else:
                 messagebox.showerror("Error", "No matching face found.")
+
         except Exception as e:
             messagebox.showerror("Error", f"Face recognition failed.\n{e}")
+
 
     def submit_attendance(self):
         if not self.recognized_email:
