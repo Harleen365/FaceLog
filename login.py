@@ -1,12 +1,12 @@
 from tkinter import *
 from tkinter import ttk
-from PIL import Image, ImageTk    
+from PIL import Image, ImageTk
 from tkinter import messagebox
 import pymongo
 import subprocess
 
 class Login_Window:
-    def __init__(self, root):  
+    def __init__(self, root):
         self.root = root
         self.root.title("Login")
         self.root.geometry("1550x800+0+0")
@@ -20,7 +20,7 @@ class Login_Window:
         except Exception as e:
             messagebox.showerror("Database Error", f"Failed to connect to MongoDB: {str(e)}")
 
-        # Load and resize background image
+        # Background Image
         image_path = r"C:\Users\ishut\Downloads\FaceLog\Images\Login Background.jpg"
         bg_image = Image.open(image_path).resize((1550, 800))
         self.bg = ImageTk.PhotoImage(bg_image)
@@ -74,7 +74,7 @@ class Login_Window:
         forgetpassbtn.place(x=20, y=410, width=160)
 
     def login(self):
-        email = self.txtuser.get()
+        email = self.txtuser.get().strip()
         password = self.txtpass.get()
         role = self.var_role.get()
 
@@ -82,20 +82,32 @@ class Login_Window:
             messagebox.showerror("Error", "All fields are required")
             return
 
-        user = self.collection.find_one({"Email": email, "Password": password, "Role": role})
-        if user:
-           messagebox.showinfo("Success", "Login Successful")
-    
-    # Save the logged-in user's email to a file
+        # Fetch user by email
+        user = self.collection.find_one({"Email": email})
+
+        if not user:
+            messagebox.showerror("Error", "No account found with this email")
+            return
+
+        if user["Password"] != password:
+            messagebox.showerror("Error", "Incorrect password")
+            return
+
+        if user["Role"] != role:
+            messagebox.showerror("Error", f"Incorrect role selected.")
+            return
+
+        # Save the logged-in user's email
         with open("current_user.txt", "w") as f:
             f.write(email)
-        
+
+        messagebox.showinfo("Success", "Login Successful")
         self.root.destroy()
+
         if role == "Student":
             subprocess.run(["python", "studentdashboard.py"])
         elif role == "Teacher":
             subprocess.run(["python", "teacherdashboard.py"])
-
 
     def open_register(self):
         self.root.destroy()
@@ -167,7 +179,7 @@ class Login_Window:
             messagebox.showinfo("Success", "Password reset successfully", parent=self.reset_win)
             self.reset_win.destroy()
 
-if __name__ == "__main__":  
+if __name__ == "__main__":
     root = Tk()
     app = Login_Window(root)
     root.mainloop()
