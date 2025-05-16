@@ -38,8 +38,6 @@ class TeacherDashboard:
                command=self.open_data).pack(side=LEFT, padx=10, pady=10)
         Button(navbar, text="View Attendance", font=("Arial", 12, "bold"), bg="#007bff", fg="white",
                command=self.view_attendance).pack(side=LEFT, padx=10, pady=10)
-        Button(navbar, text="Update Attendance", font=("Arial", 12, "bold"), bg="#ffc107", fg="black",
-               command=self.update_attendance).pack(side=LEFT, padx=10, pady=10)
 
         logout_btn = Button(navbar, text="Logout", font=("Arial", 12, "bold"), bg="red", fg="white",
                             command=self.root.quit)
@@ -51,7 +49,6 @@ class TeacherDashboard:
 
         self.create_card(card_frame, "📁 Store Student Data", "#28a745", self.open_data, 0)
         self.create_card(card_frame, "📊 View Attendance", "#007bff", self.view_attendance, 1)
-        self.create_card(card_frame, "✏️ Update Attendance", "#ffc107", self.update_attendance, 2)
 
         # Footer
         footer = Label(self.root, text="© 2025 Teacher Panel | FaceLog System", font=("Arial", 10), bg="navy", fg="white")
@@ -70,9 +67,6 @@ class TeacherDashboard:
 
     def view_attendance(self):
         subprocess.Popen(["python", "View Attendance.py"])
-
-    def update_attendance(self):
-        subprocess.Popen(["python", "Update Attendance.py"])
 
 def main():
     root = Tk()
