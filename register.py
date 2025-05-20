@@ -29,7 +29,7 @@ class Register:
         self.var_confpass = StringVar()
         self.var_role = StringVar()
 
-        image_path = r"C:\Users\ishut\Downloads\FaceLog\Images\registerbackgroundfinal.jpg"
+        image_path = r"C:\Users\ishut\Downloads\FaceLog\Images\image.png"
         bg_image = Image.open(image_path).resize((1600, 900))
         self.bg = ImageTk.PhotoImage(bg_image)
 
